@@ -1,7 +1,7 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'path';
 
 const app = express();
@@ -56,8 +56,25 @@ io.on("connection", (socket) => {
         //broadcast to other peers
         socket.broadcast.emit("icecandidate", candidate);
     });
+
+    socket.on("private-message", ({ from, to, message }) => {
+        console.log("PRIVATE MESSAGE SERVER:", from, "->", to, message);
+
+        const targetUser = allusers[to];
+
+        if (!targetUser) {
+            console.log("TARGET USER NOT FOUND:", to);
+            return;
+        }
+
+        io.to(targetUser.id).emit("private-message", {
+            from,
+            message
+        });
+    });
+
 })
 
 server.listen(5000, () => {
-    console.log(`Server listening on port 9000`);
+    console.log(`Server listening on port 5000`);
 });

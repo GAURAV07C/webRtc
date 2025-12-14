@@ -27,13 +27,26 @@
             <video id="localVideo" autoplay muted playsinline></video>
           </div>
           <div class="remote-video">
-            <video id="remoteVideo" autoplay  playsinline></video>
+            <video id="remoteVideo" autoplay playsinline></video>
           </div>
         </div>
         <div>
           <button id="end-call-btn" class="call call-disconnect d-none">
             <img src="/images/phone-disconnect.png" alt="" />
           </button>
+        </div>
+        <!-- CHAT CONTAINER -->
+        <div class="chat-container">
+          <div class="chat-header">Chat</div>
+
+          <div id="chatMessages" class="chat-messages">
+            <!-- messages yaha aayenge -->
+          </div>
+
+          <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Type a message..." />
+            <button id="sendChatBtn">Send</button>
+          </div>
         </div>
       </section>
     </main>

@@ -4,6 +4,9 @@ const allusersHtml = document.getElementById("allusers");
 const localVideo = document.getElementById("localVideo");
 const remoteVideo = document.getElementById("remoteVideo");
 const endCallBtn = document.getElementById("end-call-btn");
+const chatInput = document.getElementById("chatInput")
+const chatSendButton = document.getElementById("sendChatBtn");
+
 const socket = io();
 let localStream;
 let caller = [];
@@ -63,6 +66,33 @@ createUserBtn.addEventListener("click", (e) => {
 endCallBtn.addEventListener("click", (e) => {
     socket.emit("call-ended", caller)
 })
+
+
+chatSendButton.addEventListener("click", () => {
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    if (!caller.length) {
+        alert("No active call");
+        return;
+    }
+
+    // apna message UI me
+    addChatMessage(message, "self");
+
+    // kis user ko bhejna hai
+    const toUser =
+        caller[0] === username.value ? caller[1] : caller[0];
+
+    socket.emit("private-message", {
+        from: username.value,
+        to: toUser,
+        message
+    });
+
+    chatInput.value = "";
+});
+
 
 // handle socket events
 socket.on("joined", allusers => {
@@ -125,6 +155,11 @@ socket.on("call-ended", (caller) => {
     endCall();
 })
 
+socket.on("private-message", ({ from, message }) => {
+    console.log("PRIVATE MESSAGE RECEIVED:", from, message);
+    addChatMessage(message, "remote", from);
+});
+
 
 // start call method
 const startCall = async (user) => {
@@ -155,3 +190,13 @@ const startMyVideo = async () => {
 }
 
 startMyVideo();
+
+const chatMessages = document.getElementById("chatMessages");
+
+function addChatMessage(message, type, sender = "") {
+    const div = document.createElement("div");
+    div.className = `chat-message ${type}`;
+    div.innerHTML = sender ? `<b>${sender}:</b> ${message}` : message;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
